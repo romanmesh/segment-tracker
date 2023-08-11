@@ -41,4 +41,4 @@ If the `analytics` object from Segment is not available, the script will log a w
 License
 -------
 
-Please specify licensing information here, if applicable.
+MIT License
