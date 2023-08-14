@@ -12,7 +12,6 @@
     document.body.addEventListener("click", handleElementClick)
     window.addEventListener("popstate", () => trackPageViewed(previousURL))
     window.addEventListener("hashchange", () => trackPageViewed(previousURL))
-    trackPageViewed()
   }
 
   /**
