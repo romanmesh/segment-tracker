@@ -14,6 +14,18 @@
     window.addEventListener("hashchange", () => trackPageViewed(previousURL))
   }
 
+  function getTrackingDataFromEventTarget(target) {
+    let currentTarget = target
+    while (currentTarget) {
+      const eventName = currentTarget.getAttribute("data-track-event")
+      if (eventName) {
+        return eventName
+      }
+      currentTarget = currentTarget.parentElement
+    }
+    return null
+  }
+
   /**
    * Handles click events on DOM elements. Sends tracking data to Segment
    * if the clicked element has a `data-track-event` attribute.
@@ -21,10 +33,11 @@
    */
   function handleElementClick(event) {
     const analytics = global.analytics || window.analytics
-    const eventName = event.target.getAttribute("data-track-event")
+    const eventName = getTrackingDataFromEventTarget(event.target)
+    console.log("eventName", eventName)
     if (eventName) {
       const eventData = {
-        ...getDataAttributes(event.target),
+        ...getDataAttributesFromEventTarget(event.target),
       }
 
       if (analytics && typeof analytics.track === "function") {
@@ -35,19 +48,25 @@
     }
   }
 
-  /**
-   * Collects all data attributes from a given DOM element that start with `data-event-`.
-   * @param {HTMLElement} element - The DOM element to gather data attributes from.
-   * @returns {Object} - An object containing the data attributes.
-   */
-  function getDataAttributes(element) {
+  function getDataAttributesFromEventTarget(target) {
+    let currentTarget = target
     const data = {}
-    for (let attr of element.attributes) {
-      if (attr.name.startsWith("data-event-")) {
-        const key = attr.name.slice("data-event-".length)
-        data[key] = attr.value
+
+    while (currentTarget) {
+      for (let attr of currentTarget.attributes) {
+        if (attr.name.startsWith("data-event-")) {
+          const key = attr.name.slice("data-event-".length)
+          data[key] = attr.value
+        }
       }
+
+      if (Object.keys(data).length > 0) {
+        return data
+      }
+
+      currentTarget = currentTarget.parentElement
     }
+
     return data
   }
 
