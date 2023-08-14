@@ -17,6 +17,7 @@
    * @param {Event} event - The DOM click event.
    */
   function handleElementClick(event) {
+    const analytics = global.analytics || window.analytics;
     const eventName = event.target.getAttribute("data-track-event");
     if (eventName) {
       const eventData = {
@@ -24,8 +25,8 @@
       };
 
       // Check for analytics availability before calling it
-      if (global.analytics && typeof global.analytics.track === "function") {
-        global.analytics.track(eventName, eventData);
+      if (analytics && typeof analytics.track === "function") {
+        analytics.track(eventName, eventData);
       } else {
         console.warn("Segment analytics is not available.");
       }
@@ -69,9 +70,9 @@
    */
   function trackPageViewed() {
     const eventData = gatherEventData();
-
+    const analytics = global.analytics || window.analytics;
     // Check for analytics availability before calling it
-    if (global.analytics && typeof global.analytics.track === "function") {
+    if (analytics && typeof analytics.track === "function") {
       analytics.track("Page Viewed New", eventData);
     } else {
       console.warn("Segment analytics is not available for Page Viewed event.");
